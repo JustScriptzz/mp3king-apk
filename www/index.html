@@ -1,5 +1,130 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><title>MP3King</title></head>
-<body style="background:#0a0a0a"></body>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MP3King</title>
+<style>
+  :root { color-scheme: dark; }
+  html, body {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    background: #0a0a0a;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  body {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 50% 40%, #161616 0%, #0a0a0a 65%);
+  }
+  .ring-wrap {
+    position: relative;
+    width: 140px; height: 140px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+  }
+  .ring {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #f5c518;
+    border-right-color: #f5c51855;
+    animation: spin 1.1s linear infinite;
+  }
+  .ring.delay {
+    inset: 12px;
+    border-top-color: #f5c51899;
+    animation-duration: 1.6s;
+    animation-direction: reverse;
+  }
+  .logo {
+    width: 86px; height: 86px;
+    border-radius: 22px;
+    object-fit: cover;
+    box-shadow: 0 0 24px rgba(245, 197, 24, 0.35);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  .title {
+    font-size: 22px; font-weight: 700; letter-spacing: 0.5px;
+    color: #f5c518;
+    text-shadow: 0 0 18px rgba(245, 197, 24, 0.3);
+    margin-bottom: 6px;
+    opacity: 0;
+    animation: fadeIn 0.6s ease forwards 0.2s;
+  }
+  .subtitle {
+    font-size: 13px; color: #777; letter-spacing: 0.3px;
+    opacity: 0;
+    animation: fadeIn 0.6s ease forwards 0.45s;
+  }
+  @keyframes fadeIn { to { opacity: 1; } }
+
+  .retry {
+    display: none;
+    margin-top: 22px;
+    padding: 10px 22px;
+    background: #f5c518;
+    color: #0a0a0a;
+    border: none;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .offline-msg {
+    display: none;
+    margin-top: 18px;
+    color: #999;
+    font-size: 13px;
+    text-align: center;
+    padding: 0 32px;
+  }
+</style>
+</head>
+<body>
+  <div class="ring-wrap">
+    <div class="ring"></div>
+    <div class="ring delay"></div>
+    <img class="logo" src="assets/logo.png" alt="MP3King">
+  </div>
+  <div class="title">MP3King</div>
+  <div class="subtitle">Tuning in&hellip;</div>
+
+  <div class="offline-msg" id="offlineMsg">Can't reach mp3king.vercel.app.<br>Check your connection and try again.</div>
+  <button class="retry" id="retryBtn">Retry</button>
+
+  <script>
+    var TARGET = "https://mp3king.vercel.app";
+    var navigated = false;
+
+    function goLive() {
+      if (navigated) return;
+      navigated = true;
+      window.location.replace(TARGET);
+    }
+
+    // Navigate right away; this loading screen stays visible until the
+    // live site actually starts rendering, giving a real custom loader
+    // instead of a blank flash.
+    goLive();
+
+    // Safety net: if after 7s we're still here (offline / slow DNS),
+    // show a retry button instead of staring at a spinner forever.
+    setTimeout(function () {
+      document.getElementById('offlineMsg').style.display = 'block';
+      document.getElementById('retryBtn').style.display = 'inline-block';
+    }, 7000);
+
+    document.getElementById('retryBtn').addEventListener('click', function () {
+      navigated = false;
+      document.getElementById('offlineMsg').style.display = 'none';
+      this.style.display = 'none';
+      goLive();
+    });
+  </script>
+</body>
 </html>
