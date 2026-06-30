@@ -107,9 +107,6 @@
       window.location.replace(TARGET);
     }
 
-    // Navigate right away; this loading screen stays visible until the
-    // live site actually starts rendering, giving a real custom loader
-    // instead of a blank flash.
     goLive();
 
     // Safety net: if after 7s we're still here (offline / slow DNS),
@@ -125,6 +122,28 @@
       this.style.display = 'none';
       goLive();
     });
+
+    // When the app resumes from background via Capacitor App plugin,
+    // do a controlled navigate instead of letting the WebView auto-reload
+    // (which triggers cross-origin script errors from dangling external fetches).
+    document.addEventListener('resume', function () {
+      if (window.location.href.indexOf(TARGET) === -1) {
+        navigated = false;
+        goLive();
+      }
+    }, false);
+
+    // Also handle via Capacitor App plugin if available
+    document.addEventListener('deviceready', function () {
+      if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App) {
+        window.Capacitor.Plugins.App.addListener('appStateChange', function (state) {
+          if (state.isActive && window.location.href.indexOf(TARGET) === -1) {
+            navigated = false;
+            goLive();
+          }
+        });
+      }
+    }, false);
   </script>
 </body>
 </html>
