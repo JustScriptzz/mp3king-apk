@@ -1,0 +1,8 @@
+node_modules/
+android/app/google-services.json
+android/local.properties
+android/.gradle/
+android/app/build/
+android/build/
+*.iml
+.idea/
