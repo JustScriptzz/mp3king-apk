@@ -1,50 +1,44 @@
 # MP3King APK
 
-App nativa Android per [mp3king.vercel.app](https://mp3king.vercel.app), basata su Capacitor.
+Native Android app for [mp3king.vercel.app](https://mp3king.vercel.app), built with Capacitor.
 
-A differenza di una WebView "nuda", questa è un involucro nativo vero: splash screen nativa, status bar gestita nativamente, bridge JS per plugin nativi (push notifications, ecc.), tutto mentre il contenuto carica live dal sito (`server.url` in `capacitor.config.json`). Stesso identico approccio usato da app come quella di ChatGPT.
+Unlike a raw WebView, this is a real native shell: native splash screen, natively managed status bar, JS bridge for native plugins (push notifications, etc.), while the content loads live from the site (`server.url` in `capacitor.config.json`). Same approach used by apps like the official ChatGPT app.
 
-## Come funziona
+## How it works
 
-- L'app carica **live** `https://mp3king.vercel.app` ad ogni avvio: zero rebuild quando aggiorni il sito.
-- I plugin Capacitor (`@capacitor/push-notifications`, `@capacitor/splash-screen`, `@capacitor/status-bar`, `@capacitor/app`) sono disponibili automaticamente nella pagina via `window.Capacitor`, anche se il sito è remoto, perché il bridge JS viene iniettato dalla WebView nativa ad ogni caricamento.
+- The app loads `https://mp3king.vercel.app` **live** on every launch: zero rebuilds needed when you update the site.
+- Capacitor plugins (`@capacitor/push-notifications`, `@capacitor/splash-screen`, `@capacitor/status-bar`, `@capacitor/app`) are automatically available on the page via `window.Capacitor`, even though the site is remote, because the native WebView injects the JS bridge on every page load.
 
-## Build locale
+## Local build
 
-Serve Android Studio (o solo Android SDK + JDK 17) installato sulla tua macchina.
+You need Android Studio (or just the Android SDK + JDK 17) installed on your machine.
 
 ```bash
 npm install
 npx cap sync android
-npx cap open android   # apre Android Studio
+npx cap open android   # opens Android Studio
 ```
 
-Da Android Studio: Build > Build Bundle(s)/APK(s) > Build APK(s).
+From Android Studio: Build > Build Bundle(s)/APK(s) > Build APK(s).
 
-## Build automatica (GitHub Actions)
+## Automated build (GitHub Actions)
 
-Ad ogni push su `main` parte `.github/workflows/build-apk.yml`, che compila un APK debug e lo carica come artifact scaricabile dalla tab Actions della repo.
+On every push to `main`, `.github/workflows/build-apk.yml` runs, compiling a debug APK and uploading it as a downloadable artifact in the repo's Actions tab.
 
-## Icona / Splash
+## Icon / Splash
 
-Sostituisci le immagini in `android/app/src/main/res/mipmap-*/ic_launcher*.png` con il logo MP3King (preso dalla repo principale `mp3king`, file logo jpk). Per generare automaticamente tutte le risoluzioni puoi usare [Capacitor Assets](https://github.com/ionic-team/capacitor-assets):
-
-```bash
-npm install @capacitor/assets --save-dev
-npx capacitor-assets generate --android
-```
-mettendo `assets/icon.png` (1024x1024) e `assets/splash.png` (2732x2732) prima di lanciare il comando.
+Already generated from the MP3King logo, applied across all densities (mdpi to xxxhdpi, round + adaptive icon, landscape/portrait splash screens). To regenerate from a new source image, drop it at `assets/icon-source.jpg` and re-run the resize script (ask Claude, or use any Capacitor asset generator once `sharp`'s binary download isn't blocked on your network).
 
 ## Push Notifications
 
-Richiede un progetto Firebase:
+Requires a Firebase project:
 
-1. Crea un progetto su [Firebase Console](https://console.firebase.google.com), aggiungi un'app Android con package name `app.mp3king.android`.
-2. Scarica `google-services.json` e mettilo in `android/app/google-services.json` (build locale), oppure:
-3. Per la build via GitHub Actions: codifica il file in base64 (`base64 -w0 google-services.json`) e salvalo come secret della repo chiamato `GOOGLE_SERVICES_JSON`.
+1. Create a project at [Firebase Console](https://console.firebase.google.com), add an Android app with package name `app.mp3king.android`.
+2. Download `google-services.json` and place it at `android/app/google-services.json` (local build), or:
+3. For GitHub Actions builds: base64-encode the file (`base64 -w0 google-services.json`) and save it as a repo secret named `GOOGLE_SERVICES_JSON`.
 
-Senza `google-services.json` l'app si builda comunque, ma le push non funzionano (il plugin lo rileva e si disattiva da solo, vedi log Gradle).
+Without `google-services.json` the app still builds fine, but push won't work (the plugin detects this and disables itself — see Gradle logs).
 
 ## Package name
 
-`app.mp3king.android` — modificabile in `capacitor.config.json` (`appId`) prima del primo `cap add android` (se già aggiunto, va cambiato anche dentro `android/`, più complesso).
+`app.mp3king.android` — change it in `capacitor.config.json` (`appId`) before the first `cap add android` (if already added, it also needs changing inside `android/`, which is more involved).
