@@ -25,6 +25,37 @@ jobs:
       - name: Install deps
         run: npm install
 
+      - name: Bundle site files from Vercel into www/
+        run: |
+          set -e
+          mkdir -p www/assets
+
+          # Download app HTML → saved as app.html (index.html is our splash)
+          curl -sL https://mp3king.vercel.app/ -o www/app.html
+          echo "app.html: $(wc -c < www/app.html) bytes"
+
+          # Parse JS/CSS asset paths referenced in the HTML
+          ASSETS=$(grep -oE 'src="(/assets/[^"]+)"|href="(/assets/[^"]+)"' www/app.html \
+            | grep -oE '/assets/[^"]+')
+          echo "Assets to download: $ASSETS"
+
+          for ASSET in $ASSETS; do
+            FILENAME=$(basename "$ASSET")
+            curl -sL "https://mp3king.vercel.app${ASSET}" -o "www/assets/${FILENAME}"
+            echo "  $FILENAME: $(wc -c < "www/assets/${FILENAME}") bytes"
+          done
+
+          # Static extras
+          curl -sL https://mp3king.vercel.app/manifest.json  -o www/manifest.json  || true
+          curl -sL https://mp3king.vercel.app/placeholder.svg -o www/placeholder.svg || true
+          curl -sL https://mp3king.vercel.app/logo.jpeg       -o www/logo.jpeg      || true
+
+          # Rewrite asset paths: /assets/foo.js → assets/foo.js (relative, no leading /)
+          sed -i 's|="/assets/|="assets/|g' www/app.html
+
+          echo "--- www/ ---"
+          ls -lh www/ www/assets/
+
       - name: Sync Capacitor
         run: npx cap sync android
 

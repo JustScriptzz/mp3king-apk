@@ -3,11 +3,6 @@
   "appName": "MP3King",
   "webDir": "www",
   "bundledWebRuntime": false,
-  "server": {
-    "cleartext": false,
-    "androidScheme": "https",
-    "allowNavigation": ["mp3king.vercel.app", "*.mp3king.vercel.app"]
-  },
   "android": {
     "allowMixedContent": false,
     "backgroundColor": "#0a0a0a"
