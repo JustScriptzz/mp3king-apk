@@ -3,6 +3,10 @@
   "appName": "MP3King",
   "webDir": "www",
   "bundledWebRuntime": false,
+  "server": {
+    "errorPath": "app.html",
+    "androidScheme": "https"
+  },
   "android": {
     "allowMixedContent": false,
     "backgroundColor": "#0a0a0a"
