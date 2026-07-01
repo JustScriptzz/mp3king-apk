@@ -4,8 +4,9 @@
   "webDir": "www",
   "bundledWebRuntime": false,
   "server": {
-    "androidScheme": "https",
-    "errorPath": "index.html"
+    "url": "https://mp3king.vercel.app",
+    "cleartext": false,
+    "androidScheme": "https"
   },
   "android": {
     "allowMixedContent": false,

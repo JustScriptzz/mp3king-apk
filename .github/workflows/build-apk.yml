@@ -9,40 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout mp3king-apk
-        uses: actions/checkout@v4
-
-      - name: Checkout mp3king (site source)
-        uses: actions/checkout@v4
-        with:
-          repository: JustScriptzz/mp3king
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: mp3king-site
-
-      - name: Copy site files into www/
-        run: |
-          set -e
-          mkdir -p www/assets
-
-          # Main app HTML → index.html (Capacitor entry point, no redirect)
-          cp mp3king-site/index.html www/index.html
-
-          # All assets (JS, CSS, widget, etc.) — skip backup versions (*-v*.js)
-          for f in mp3king-site/assets/*; do
-            fname=$(basename "$f")
-            if echo "$fname" | grep -qE '\-v[0-9]+\.js$'; then
-              continue
-            fi
-            cp "$f" "www/assets/$fname"
-          done
-
-          # Static extras
-          cp mp3king-site/placeholder.svg www/placeholder.svg
-          cp mp3king-site/logo.jpeg      www/logo.jpeg
-          cp mp3king-site/manifest.json  www/manifest.json
-
-          echo "--- www/ ---"
-          ls -lh www/ www/assets/
+      - uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
