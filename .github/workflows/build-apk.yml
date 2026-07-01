@@ -24,18 +24,16 @@ jobs:
           set -e
           mkdir -p www/assets
 
-          # Main app HTML → app.html (index.html is our animated splash)
-          cp mp3king-site/index.html www/app.html
+          # Main app HTML → index.html (Capacitor entry point, no redirect)
+          cp mp3king-site/index.html www/index.html
 
           # All assets (JS, CSS, widget, etc.) — skip backup versions (*-v*.js)
           for f in mp3king-site/assets/*; do
             fname=$(basename "$f")
-            # skip backup versions like index-BfX2ikgF-v10.js
             if echo "$fname" | grep -qE '\-v[0-9]+\.js$'; then
               continue
             fi
             cp "$f" "www/assets/$fname"
-            echo "  copied: $fname"
           done
 
           # Static extras
@@ -43,10 +41,7 @@ jobs:
           cp mp3king-site/logo.jpeg      www/logo.jpeg
           cp mp3king-site/manifest.json  www/manifest.json
 
-          # Rewrite asset paths in app.html: /assets/ → assets/ (relative)
-          sed -i 's|="/assets/|="assets/|g' www/app.html
-
-          echo "--- www/ contents ---"
+          echo "--- www/ ---"
           ls -lh www/ www/assets/
 
       - name: Setup Node

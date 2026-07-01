@@ -4,8 +4,8 @@
   "webDir": "www",
   "bundledWebRuntime": false,
   "server": {
-    "errorPath": "app.html",
-    "androidScheme": "https"
+    "androidScheme": "https",
+    "errorPath": "index.html"
   },
   "android": {
     "allowMixedContent": false,
@@ -13,7 +13,7 @@
   },
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 600,
+      "launchShowDuration": 1200,
       "backgroundColor": "#0a0a0a",
       "androidSplashResourceName": "splash",
       "androidScaleType": "CENTER_CROP",
